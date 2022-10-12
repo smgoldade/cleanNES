@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.22)
+project(glad)
+
+set(CMAKE_CXX_STANDARD 23)
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    message(FATAL_ERROR "The only supported compiler for the project is MSVC")
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/W4 /fp:fast)
+    if(CMAKE_BUILD_TYPE EQUAL Release)
+        add_compile_options(/O2)
+    endif()
+    if(CMAKE_BUILD_TYPE EQUAL Debug)
+        add_compile_options(/fsanitize=address)
+    endif()
+endif ()
+
+add_library(glad STATIC)
+target_sources(glad PRIVATE src/glad.c)
+target_include_directories(glad PUBLIC include)
