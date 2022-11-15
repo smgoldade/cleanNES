@@ -13,6 +13,7 @@ class Renderer {
 
 public:
     Renderer(std::unique_ptr<RenderingProcessor> _rendering_processor);
+    ~Renderer();
     auto prepare_renderer() -> void;
     auto create_renderer() -> void;
     auto destroy_renderer() -> void;
@@ -37,6 +38,7 @@ private:
 
     std::thread background_thread;
     std::atomic<bool> running;
+    bool destroyed;
 };
 
 #endif //_RENDERER_H_

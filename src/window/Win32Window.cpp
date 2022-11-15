@@ -2,8 +2,8 @@
 #include "Win32Window.h"
 
 Win32Window::~Win32Window() {
-    if(renderer) {
-        renderer->destroy_renderer();
+    if(renderer.use_count() > 1) {
+        spdlog::error("Memory leak of renderer detected!");
     }
 }
 
@@ -62,9 +62,7 @@ void Win32Window::process_events() {
     MSG msg {};
     if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
         if(msg.message == WM_QUIT) {
-            if(renderer) {
-                renderer->destroy_renderer();
-            }
+            renderer->destroy_renderer();
             DestroyWindow(window);
             close_request = true;
         }
@@ -82,8 +80,8 @@ auto Win32Window::individual_callback(UINT msg, WPARAM w_param, LPARAM l_param) 
         case WM_CLOSE:
             spdlog::info("Window close request received.");
             renderer->destroy_renderer();
-            close_request = true;
             DestroyWindow(window);
+            close_request = true;
             return 0;
         case WM_CREATE:
             renderer = std::make_shared<Renderer>(std::make_unique<Win32OpenGLRenderingProcessor>(window));

@@ -8,6 +8,7 @@
 class Win32OpenGLRenderingProcessor : public RenderingProcessor{
 public:
     explicit Win32OpenGLRenderingProcessor(HWND _window);
+    ~Win32OpenGLRenderingProcessor();
     auto process_command(std::shared_ptr<RenderingCommand> rendering_command) -> void override;
 private:
     HWND window;

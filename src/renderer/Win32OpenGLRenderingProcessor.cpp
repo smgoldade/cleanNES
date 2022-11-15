@@ -3,6 +3,10 @@
 
 Win32OpenGLRenderingProcessor::Win32OpenGLRenderingProcessor(HWND _window) : window(_window) {}
 
+Win32OpenGLRenderingProcessor::~Win32OpenGLRenderingProcessor() {
+    destroy_context();
+}
+
 auto Win32OpenGLRenderingProcessor::process_command(std::shared_ptr<RenderingCommand> rendering_command) -> void {
     switch(rendering_command->type) {
         case RenderingCommandType::CLEAR: {

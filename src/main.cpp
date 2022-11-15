@@ -27,8 +27,8 @@ auto main() -> int {
     win32_window.get_renderer()->clear_color({0, 64, 64});
     while(!win32_window.should_close()) {
         win32_window.get_renderer()->clear();
-        win32_window.process_events();
         win32_window.get_renderer()->draw_frame();
+        win32_window.process_events();
     }
 
     return 0;

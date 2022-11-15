@@ -5,8 +5,18 @@
 Renderer::Renderer(std::unique_ptr<RenderingProcessor> _rendering_processor) : rendering_processor(std::move(_rendering_processor)) {
     spdlog::info("Starting rendering thread...");
     running = true;
+    destroyed = false;
     background_thread = std::thread(&Renderer::process_thread, this);
     spdlog::info("Rendering thread ID: [{}]", background_thread.get_id());
+}
+
+Renderer::~Renderer() {
+    if(!destroyed) {
+        spdlog::warn("Renderer deconstructed without being destroyed.");
+        destroy_renderer();
+    }
+    running = false;
+    background_thread.join();
 }
 
 auto Renderer::prepare_renderer() -> void {
@@ -21,10 +31,17 @@ auto Renderer::create_renderer() -> void {
     while(!command->executed);
     if(command->error) {
         spdlog::error("Error creating renderer.");
+        return;
     }
+    destroyed = false;
 }
 
 auto Renderer::destroy_renderer() -> void {
+    if(destroyed) {
+        spdlog::warn("Already destroyed renderer told to destroy again.");
+        return;
+    }
+
     auto command = std::make_shared<RenderingCommand>(RenderingCommand{
         .type = RenderingCommandType::DESTROY,
     });
@@ -33,8 +50,7 @@ auto Renderer::destroy_renderer() -> void {
     spdlog::debug("Renderer destruction issued.");
     while(!command->executed);
     spdlog::debug("Renderer destruction complete.");
-    running = false;
-    background_thread.join();
+    destroyed = true;
 }
 
 auto Renderer::clear(bool color_buffer, bool depth_buffer) -> void {
