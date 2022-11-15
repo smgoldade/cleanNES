@@ -3,9 +3,6 @@
 #include "types.h"
 #include "window/Win32Window.h"
 
-bool running;
-std::unique_ptr<std::thread> render_thread;
-
 auto init_logging() -> void {
     auto new_logger = spdlog::basic_logger_mt("logger", "logs/cleanNES.log");
     spdlog::set_default_logger(new_logger);
